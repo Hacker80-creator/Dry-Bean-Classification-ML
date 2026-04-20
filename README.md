@@ -49,4 +49,13 @@ The following Confusion Matrix Heatmap visualizes the model's performance across
 License
 This project is released under the MIT License. Feel free to use, modify, and distribute as per the license terms.
 
+### Key Performance Metrics
+| Metric | Value |
+| :--- | :--- |
+| **Overall Accuracy** | **90.0%** |
+| **Model Type** | K-Nearest Neighbors (k=5) |
+| **Test Samples** | 2000+ Morphological Instances |
+
+#### Confusion Matrix Visualization
+
 ![Model Performance Chart](performance_chart.png)
