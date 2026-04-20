@@ -16,6 +16,7 @@ The project utilizes a **decoupled architecture**, strictly separating the train
 
 * **`bean_classifier.py`**: The Training Pipeline. Handles data ingestion, feature scaling, model fitting, and automated evaluation.
 * **`predict.py`**: The Inference Engine. A CLI-based utility that loads serialized artifacts to perform real-time classification on new data points.
+* **`evaluate_model.py`**: Evaluation module used to generate performance metrics and visualizations.
 * **`knn_classifier_model.pkl`**: Serialized model artifact representing the trained state of the classifier.
 * **`scaler.pkl`**: Serialized transformation parameters required to maintain data consistency during inference.
 
@@ -23,17 +24,29 @@ The project utilizes a **decoupled architecture**, strictly separating the train
 
 ### Engineering Principles
 1. **Model Persistence:** Leverages `joblib` for efficient object serialization, enabling rapid deployment without the overhead of retraining.
-2. **Feature Normalization:** Essential for distance-based algorithms, the pipeline ensures that high-magnitude features (e.g., Area) do not disproportionately influence the classification relative to fractional features (e.g., Shape Factors).
-3. **Reproducibility:** The split-test methodology utilizes fixed random states to ensure consistent performance metrics across different execution environments.
+2. **Feature Normalization:** Essential for distance-based algorithms, the pipeline ensures that high-magnitude features (e.g., Area) do not disproportionately influence the classification.
+3. **Reproducibility:** The project includes a standardized `requirements.txt` to ensure consistent execution environments.
 
 ---
 
-### Installation and Deployment
+## Installation and Deployment
 
-**1. Environment Isolation**
-Initialize a clean virtual environment to manage dependencies:
-```bash
-python -m venv env
-.\env\Scripts\activate
+1. **Environment Isolation**: Initialize a clean virtual environment:
+   ```powershell
+   python -m venv env
+   .\env\Scripts\activate
+   pip install -r requirements.txt
+
+Model Training: To retrain the model and update artifacts:
+python bean_classifier.py
+
+Real-time Inference: To run a prediction on new data:
+python predict.py
+
+Model Evaluation
+The following Confusion Matrix Heatmap visualizes the model's performance across all 7 bean classes. The strong diagonal trend confirms high precision, with minimal overlap occurring only between morphologically similar varieties.
+
+License
+This project is released under the MIT License. Feel free to use, modify, and distribute as per the license terms.
 
 ![Model Performance Chart](performance_chart.png)
