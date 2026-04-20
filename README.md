@@ -35,3 +35,5 @@ Initialize a clean virtual environment to manage dependencies:
 ```bash
 python -m venv env
 .\env\Scripts\activate
+
+![Model Performance Chart](performance_chart.png)
