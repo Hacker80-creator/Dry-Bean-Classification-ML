@@ -7,7 +7,7 @@ model = joblib.load('knn_classifier_model.pkl')
 scaler = joblib.load('scaler.pkl')
 
 # 2. Get the actual feature names from the dataset
-data = pd.read_csv('train_dataset.csv')
+data = pd.read_csv('Data_sets/train_dataset.csv')
 features = data.drop(columns=['Class']).columns.tolist()
 
 print(f"--- Bean Type Predictor ({len(features)} Features Required) ---")

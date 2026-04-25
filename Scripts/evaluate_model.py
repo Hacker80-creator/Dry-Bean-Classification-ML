@@ -5,7 +5,7 @@ import joblib
 import pandas as pd
 
 # Load data and model
-data = pd.read_csv('train_dataset.csv')
+data = pd.read_csv('Data_sets/train_dataset.csv')
 model = joblib.load('knn_classifier_model.pkl')
 scaler = joblib.load('scaler.pkl')
 

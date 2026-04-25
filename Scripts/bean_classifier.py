@@ -34,7 +34,7 @@ def plot_conf_matrix(y_true, y_pred, labels):
 def main():
     # 1. Load and Split
     print(" Initializing Training Pipeline...")
-    data = pd.read_csv('train_dataset.csv')
+    data = pd.read_csv('Data_sets/train_dataset.csv')
     X = data.drop(columns=['Class']) 
     y = data['Class']
     class_names = sorted(y.unique()) # Dynamically get bean names
@@ -57,7 +57,7 @@ def main():
 
     # 5. Evaluation
     y_pred = knn.predict(X_test_scaled)
-    print(f'⭐ Final Accuracy: {accuracy_score(y_test, y_pred):.2f}')
+    print(f' Final Accuracy: {accuracy_score(y_test, y_pred):.2f}')
 
     # 6. Visuals
     plot_conf_matrix(y_test, y_pred, class_names)
