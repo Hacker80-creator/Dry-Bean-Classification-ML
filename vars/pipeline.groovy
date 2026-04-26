@@ -3,11 +3,15 @@
 def runDataAlignment(String imageName, String workspace) {
     echo 'Running data alignment pipeline...'
     def docker = load 'vars/docker.groovy'
+    // Use container's built-in Data_sets, mount only output directories
     docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
-        "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
     ], '/app')
+    // Copy train_dataset.csv from container to workspace
+    sh """
+        docker run --rm -v ${workspace}:/workspace ${imageName} cp /app/Data_sets/train_dataset.csv /workspace/Data_sets/
+    """
     echo 'Data alignment completed'
 }
 
