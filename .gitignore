@@ -16,6 +16,7 @@ reports/best_model_metrics.json
 performance_chart.png
 
 # Docker
+.dockerignore
 
 # Phase 1 artifacts
 Pkl/
