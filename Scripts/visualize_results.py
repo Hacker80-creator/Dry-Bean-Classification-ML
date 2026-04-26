@@ -18,7 +18,8 @@ def create_visualizations(config_path: str = "config/benchmark_config.yaml"):
     
     # Set style for professional look
     sns.set_style("whitegrid")
-    plt.rcParams['font.family'] = 'Arial'
+    # Use a font that is available in most Linux containers.
+    plt.rcParams['font.family'] = 'DejaVu Sans'
     
     # Create figure with subplots
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
