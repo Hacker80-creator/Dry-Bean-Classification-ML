@@ -12,7 +12,7 @@ MODEL_PATH = config["paths"]["model_path"]
 OUTPUT_PATH = config["paths"]["chart_output_path"]
 
 if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError("Model not found. Run python Scripts/bean_classifier.py first.")
+    raise FileNotFoundError("Model not found. Run python Scripts/benchmark_models.py first.")
 
 data = pd.read_csv(DATA_PATH)
 drop_cols = ["Class", "Class_Encoded", "Unnamed: 0"]
@@ -24,6 +24,9 @@ X = data[feature_cols]
 y_true = data[target_col]
 y_pred = model.predict(X)
 
+# Get class labels from the data
+class_labels = sorted(y_true.unique())
+
 plt.figure(figsize=(10, 8))
 cm = confusion_matrix(y_true, y_pred)
 sns.heatmap(
@@ -31,8 +34,8 @@ sns.heatmap(
     annot=True,
     fmt="d",
     cmap="Blues",
-    xticklabels=model.classes_,
-    yticklabels=model.classes_,
+    xticklabels=class_labels,
+    yticklabels=class_labels,
 )
 plt.title('Model Performance: Confusion Matrix')
 plt.savefig(OUTPUT_PATH)

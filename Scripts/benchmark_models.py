@@ -127,10 +127,29 @@ def benchmark(config_path: str = DEFAULT_CONFIG_PATH):
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(best_metrics, f, indent=2)
 
-    print("Benchmark complete.")
-    print(f"Best model: {best_name}")
-    print(f"Holdout accuracy: {best_holdout_acc:.4f}")
-    print(f"Saved model: {model_path}")
+    print("\n" + "="*80)
+    print("BENCHMARK RESULTS")
+    print("="*80)
+    print(f"\nDataset: {data_path}")
+    print(f"Samples: {len(df)} | Features: {len(feature_cols)} | Classes: {len(y.unique())}")
+    print(f"Train/Test Split: {len(X_train)}/{len(X_test)} (test_size={test_size})")
+    print(f"Cross-Validation: {cv_splits}-fold StratifiedKFold")
+    print("\n" + "-"*80)
+    print("MODEL PERFORMANCE COMPARISON")
+    print("-"*80)
+    print(f"{'Model':<20} {'CV Acc Mean':<15} {'CV Acc Std':<15} {'Holdout Acc':<15} {'Macro F1':<15}")
+    print("-"*80)
+    for _, row in result_df.iterrows():
+        print(f"{row['model_name']:<20} {row['cv_accuracy_mean']:<15.6f} {row['cv_accuracy_std']:<15.6f} {row['holdout_accuracy']:<15.6f} {row['holdout_macro_f1']:<15.6f}")
+    print("-"*80)
+    print(f"\n[BEST MODEL]: {best_name}")
+    print(f"   Holdout Accuracy: {best_holdout_acc:.4f} ({best_holdout_acc*100:.2f}%)")
+    print(f"   Macro F1 Score: {best_row['holdout_macro_f1']:.6f}")
+    print(f"   CV Accuracy: {best_row['cv_accuracy_mean']:.4f} +/- {best_row['cv_accuracy_std']:.4f}")
+    print(f"\n[SUCCESS] Model saved to: {model_path}")
+    print(f"[SUCCESS] Results saved to: {result_path}")
+    print(f"[SUCCESS] Metadata saved to: {meta_path}")
+    print("="*80 + "\n")
 
 
 if __name__ == "__main__":

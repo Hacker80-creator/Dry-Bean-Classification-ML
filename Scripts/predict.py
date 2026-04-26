@@ -26,7 +26,7 @@ def main():
 
     if not os.path.exists(model_path):
         raise FileNotFoundError(
-            "Model not found. Run python Scripts/bean_classifier.py first."
+            "Model not found. Run python Scripts/benchmark_models.py first."
         )
 
     model = joblib.load(model_path)
