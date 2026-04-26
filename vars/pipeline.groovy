@@ -40,7 +40,6 @@ def archiveArtifacts(String workspace, String outputDir) {
         mkdir -p ${outputDir}
         cp -r ${workspace}/models ${outputDir}/
         cp -r ${workspace}/reports ${outputDir}/
-        cp ${workspace}/reports/performance_chart.png ${outputDir}/
         cp ${workspace}/config/benchmark_config.yaml ${outputDir}/
         echo "Artifacts archived to ${outputDir}"
     """
