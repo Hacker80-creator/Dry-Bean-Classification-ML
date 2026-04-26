@@ -6,12 +6,15 @@ from config_utils import load_config
 def align_data(config_path: str = "config/benchmark_config.yaml"):
     print("LOG: Running data alignment pipeline")
     config = load_config(config_path)
-    data_path = config["paths"]["data_path"]
+    
+    # Read from original dataset
+    source_path = "Data_sets/Dry_Beans_Dataset.csv"
+    output_path = "Data_sets/train_dataset.csv"
 
-    if not os.path.exists(data_path):
-        raise FileNotFoundError(f"Dataset not found at {data_path}")
+    if not os.path.exists(source_path):
+        raise FileNotFoundError(f"Source dataset not found at {source_path}")
 
-    df = pd.read_csv(data_path)
+    df = pd.read_csv(source_path)
 
     # Remove index-like export column if present.
     if "Unnamed: 0" in df.columns:
@@ -26,8 +29,8 @@ def align_data(config_path: str = "config/benchmark_config.yaml"):
         mapping = {label: idx for idx, label in enumerate(class_labels)}
         df["Class_Encoded"] = df["Class"].map(mapping)
 
-    df.to_csv(data_path, index=False)
-    print(f"LOG: Dataset aligned and saved to: {data_path}")
+    df.to_csv(output_path, index=False)
+    print(f"LOG: Dataset aligned and saved to: {output_path}")
     print(f"LOG: Rows={len(df)} Columns={len(df.columns)}")
 
 

@@ -168,5 +168,113 @@ Karunadu Project/
 
 ---
 
+## Phase3: CI/CD with Docker and Jenkins
+
+### Overview
+Phase3 adds production-grade CI/CD capabilities using Dockerized execution and Jenkins orchestration. The pipeline now runs fully without external artifact repositories and archives outputs to Jenkins and VM storage.
+
+### Components
+
+#### 1. Docker containerization
+- **`Dockerfile`**: Builds runtime image with project scripts, config, and base dataset.
+- **`docker-compose.yml`**: Local development/test orchestration.
+- **`.dockerignore`**: Reduces Docker build context.
+
+#### 2. Jenkins declarative pipeline with `vars/` modularization
+- **`Jenkinsfile`**: Stage orchestration.
+- **`vars/docker.groovy`**: Docker helpers (`buildImage`, `runCommand`, `removeImage`).
+- **`vars/pipeline.groovy`**: Pipeline stage implementations.
+
+#### 3. Artifact strategy (current)
+- Jenkins `archiveArtifacts` is used for build outputs.
+- VM/local output directory (`/tmp/bean-classification-output`) stores copied artifacts.
+- No JFrog dependency in current Phase3 flow.
+
+### Final Jenkins pipeline stages
+1. **Checkout** - pull branch source.
+2. **Build Docker Image** - build `bean-classification:${BUILD_NUMBER}`.
+3. **Run Data Alignment** - generate `train_dataset.csv` and copy it into Jenkins workspace in the same container lifecycle.
+4. **Run Model Benchmarking** - train/evaluate models and persist model/report outputs.
+5. **Generate Visualizations** - produce `performance_chart.png`.
+6. **Archive Artifacts to VM** - copy models/reports/chart/config to output directory and archive in Jenkins.
+7. **Cleanup** - remove build image.
+
+### Important implementation notes
+- Data alignment uses the container's built-in source dataset and copies generated `train_dataset.csv` to mounted workspace path.
+- `vars/docker.groovy` executes commands using `sh -c` inside container so compound commands run in-container.
+- Visualization font is set to a container-safe default (`DejaVu Sans`) to avoid font warnings in Linux/Jenkins containers.
+
+### Jenkins setup (current)
+1. Install required plugins:
+   - Docker Pipeline
+   - Credentials Binding (for SCM credentials or other Jenkins credentials you use)
+2. Create pipeline job:
+   - **Pipeline script from SCM**
+   - repository URL
+   - branch: `usr/Jagadev/Phase3`
+   - script path: `Jenkinsfile`
+3. Ensure Jenkins agent can access Docker daemon.
+4. Run **Build Now** and monitor stages.
+
+### Jenkins run evidence (Build #30)
+
+Latest validated run completed with:
+- **Status**: `Finished: SUCCESS`
+- **Branch/Commit**: `usr/Jagadev/Phase3` / `02fc202`
+- **Image tag**: `bean-classification:30`
+- **Jenkins UI**: Last Successful Build artifact panel confirms archived outputs.
+
+Stage completion observed in console output:
+- Checkout
+- Build Docker Image
+- Run Data Alignment
+- Run Model Benchmarking
+- Generate Visualizations
+- Archive Artifacts to VM
+- Cleanup
+
+Benchmark highlights from the same run:
+- **Best model**: `random_forest`
+- **Holdout Accuracy**: `0.9324` (93.24%)
+- **Macro F1 Score**: `0.942767`
+- **CV Accuracy**: `0.9235 +/- 0.0037`
+
+Archived artifacts visible in Jenkins:
+- `benchmark_config.yaml`
+- `best_model.joblib`
+- `model_metadata.json`
+- `performance_chart.png`
+- `benchmark_results.csv`
+- `best_model_metrics.json`
+
+### Phase3 project structure
+
+```
+Karunadu Project/
+├── Dockerfile
+├── docker-compose.yml
+├── Jenkinsfile
+├── .dockerignore
+├── pipeline-main.groovy
+├── vars/
+│   ├── docker.groovy
+│   └── pipeline.groovy
+├── config/
+│   └── benchmark_config.yaml
+├── Data_sets/
+├── models/
+├── reports/
+├── Scripts/
+└── requirements.txt
+```
+
+### Benefits
+- **Reproducibility**: consistent runtime through Docker image build.
+- **Automation**: end-to-end CI execution in Jenkins.
+- **Traceability**: build-numbered Docker image and archived artifacts per run.
+- **Operational simplicity**: no external artifact repository dependency for current scope.
+
+---
+
 ## License
 This project is released under the MIT License. Feel free to use, modify, and distribute as per the license terms.

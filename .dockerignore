@@ -1,0 +1,33 @@
+# Virtual environments
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Phase 1 artifacts
+Pkl/
+knn_classifier_model.pkl
+scaler.pkl
+
+# Generated artifacts (will be generated in container)
+Data_sets/train_dataset.csv
+models/best_model.joblib
+models/model_metadata.json
+reports/best_model_metrics.json
+performance_chart.png
+
+# Documentation
+README.md
+PRESENTATION_GUIDE.md
+
+# OS
+.DS_Store
+Thumbs.db

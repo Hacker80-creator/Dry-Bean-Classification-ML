@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  bean-classification:
+    build: .
+    container_name: bean-classification-pipeline
+    volumes:
+      - ./Data_sets:/app/Data_sets
+      - ./config:/app/config
+      - ./Scripts:/app/Scripts
+      - ./models:/app/models
+      - ./reports:/app/reports
+    environment:
+      - PYTHONUNBUFFERED=1
