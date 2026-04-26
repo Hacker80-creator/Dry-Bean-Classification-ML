@@ -27,7 +27,7 @@ def runModelBenchmarking(String imageName, String workspace) {
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/visualize_results.py && cp /app/performance_chart.png /workspace/performance_chart.png', [
+    docker.runCommand(imageName, 'python Scripts/visualize_results.py && cp /app/performance_chart.png /workspace/reports/', [
         "${workspace}": '/workspace',
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/reports": '/app/reports'
@@ -41,11 +41,10 @@ def archiveArtifacts(String workspace, String outputDir) {
         mkdir -p ${outputDir}
         cp -r ${workspace}/models ${outputDir}/
         cp -r ${workspace}/reports ${outputDir}/
-        cp ${workspace}/performance_chart.png ${outputDir}/
         cp ${workspace}/config/benchmark_config.yaml ${outputDir}/
         echo "Artifacts archived to ${outputDir}"
     """
-    archiveArtifacts artifacts: 'models/**, reports/**, performance_chart.png, config/benchmark_config.yaml', 
+    archiveArtifacts artifacts: 'models/**, reports/**, config/benchmark_config.yaml',
                  allowEmptyArchive: false
 }
 
