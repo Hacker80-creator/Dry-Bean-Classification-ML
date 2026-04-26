@@ -3,21 +3,37 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import joblib
 import pandas as pd
+import os
+from config_utils import load_config
 
-# Load data and model
-data = pd.read_csv('Data_sets/train_dataset.csv')
-model = joblib.load('knn_classifier_model.pkl')
-scaler = joblib.load('scaler.pkl')
+config = load_config()
+DATA_PATH = config["paths"]["data_path"]
+MODEL_PATH = config["paths"]["model_path"]
+OUTPUT_PATH = config["paths"]["chart_output_path"]
 
-# Generate predictions
-X = scaler.transform(data.drop(columns=['Class']))
-y_true = data['Class']
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError("Model not found. Run python Scripts/bean_classifier.py first.")
+
+data = pd.read_csv(DATA_PATH)
+drop_cols = ["Class", "Class_Encoded", "Unnamed: 0"]
+feature_cols = [c for c in data.columns if c not in drop_cols]
+target_col = "Class" if "Class" in data.columns else "Class_Encoded"
+
+model = joblib.load(MODEL_PATH)
+X = data[feature_cols]
+y_true = data[target_col]
 y_pred = model.predict(X)
 
-# Plot
 plt.figure(figsize=(10, 8))
 cm = confusion_matrix(y_true, y_pred)
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=model.classes_, yticklabels=model.classes_)
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt="d",
+    cmap="Blues",
+    xticklabels=model.classes_,
+    yticklabels=model.classes_,
+)
 plt.title('Model Performance: Confusion Matrix')
-plt.savefig('performance_chart.png')
-print("Chart saved! Now upload performance_chart.png to GitHub.")
+plt.savefig(OUTPUT_PATH)
+print(f"Chart saved to {OUTPUT_PATH}")
