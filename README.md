@@ -216,6 +216,37 @@ Phase3 adds production-grade CI/CD capabilities using Dockerized execution and J
 3. Ensure Jenkins agent can access Docker daemon.
 4. Run **Build Now** and monitor stages.
 
+### Jenkins run evidence (Build #30)
+
+Latest validated run completed with:
+- **Status**: `Finished: SUCCESS`
+- **Branch/Commit**: `usr/Jagadev/Phase3` / `02fc202`
+- **Image tag**: `bean-classification:30`
+- **Jenkins UI**: Last Successful Build artifact panel confirms archived outputs.
+
+Stage completion observed in console output:
+- Checkout
+- Build Docker Image
+- Run Data Alignment
+- Run Model Benchmarking
+- Generate Visualizations
+- Archive Artifacts to VM
+- Cleanup
+
+Benchmark highlights from the same run:
+- **Best model**: `random_forest`
+- **Holdout Accuracy**: `0.9324` (93.24%)
+- **Macro F1 Score**: `0.942767`
+- **CV Accuracy**: `0.9235 +/- 0.0037`
+
+Archived artifacts visible in Jenkins:
+- `benchmark_config.yaml`
+- `best_model.joblib`
+- `model_metadata.json`
+- `performance_chart.png`
+- `benchmark_results.csv`
+- `best_model_metrics.json`
+
 ### Phase3 project structure
 
 ```
