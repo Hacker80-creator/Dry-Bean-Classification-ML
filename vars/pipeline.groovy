@@ -28,9 +28,14 @@ def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
     docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
+        "${workspace}": '/workspace',
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/reports": '/app/reports'
     ], '/app')
+    // Copy performance_chart.png from container to workspace
+    sh """
+        docker run --rm -v ${workspace}:/workspace ${imageName} cp /app/performance_chart.png /workspace/
+    """
     echo 'Visualizations generated'
 }
 
