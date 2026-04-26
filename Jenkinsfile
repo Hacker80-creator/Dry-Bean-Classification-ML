@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'usr/Jagadev/Phase3', url: 'https://github.com/Hacker80-creator/Dry-Bean-Classification-ML.git', credentialsId: 'github-credentials'
                 echo 'Checked out source code'
             }
         }
