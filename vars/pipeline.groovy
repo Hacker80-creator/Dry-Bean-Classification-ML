@@ -6,7 +6,6 @@ def runDataAlignment(String imageName, String workspace) {
     docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/config": '/app/config',
-        "${workspace}/Scripts": '/app/Scripts',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
     ], '/app')
@@ -19,7 +18,6 @@ def runModelBenchmarking(String imageName, String workspace) {
     docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/config": '/app/config',
-        "${workspace}/Scripts": '/app/Scripts',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
     ], '/app')
@@ -32,7 +30,6 @@ def generateVisualizations(String imageName, String workspace) {
     docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/config": '/app/config',
-        "${workspace}/Scripts": '/app/Scripts',
         "${workspace}/reports": '/app/reports'
     ], '/app')
     echo 'Visualizations generated'
