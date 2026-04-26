@@ -168,119 +168,66 @@ Karunadu Project/
 
 ---
 
-## Phase3: CI/CD with Docker, Jenkins, and JFrog Artifactory
+## Phase3: CI/CD with Docker and Jenkins
 
 ### Overview
-Phase3 adds production-grade CI/CD capabilities to the project, enabling automated containerization, continuous integration, and artifact management.
+Phase3 adds production-grade CI/CD capabilities using Dockerized execution and Jenkins orchestration. The pipeline now runs fully without external artifact repositories and archives outputs to Jenkins and VM storage.
 
 ### Components
 
-#### 1. Docker Containerization
-- **Dockerfile**: Multi-stage build for Python environment
-- **docker-compose.yml**: Local development and testing
-- **.dockerignore**: Optimizes build context by excluding unnecessary files
+#### 1. Docker containerization
+- **`Dockerfile`**: Builds runtime image with project scripts, config, and base dataset.
+- **`docker-compose.yml`**: Local development/test orchestration.
+- **`.dockerignore`**: Reduces Docker build context.
 
-**Build and run locally:**
-```powershell
-# Build Docker image
-docker build -t bean-classification:latest .
+#### 2. Jenkins declarative pipeline with `vars/` modularization
+- **`Jenkinsfile`**: Stage orchestration.
+- **`vars/docker.groovy`**: Docker helpers (`buildImage`, `runCommand`, `removeImage`).
+- **`vars/pipeline.groovy`**: Pipeline stage implementations.
 
-# Run with docker-compose
-docker-compose up
+#### 3. Artifact strategy (current)
+- Jenkins `archiveArtifacts` is used for build outputs.
+- VM/local output directory (`/tmp/bean-classification-output`) stores copied artifacts.
+- No JFrog dependency in current Phase3 flow.
 
-# Run specific stage
-docker run --rm -v ${PWD}/Data_sets:/app/Data_sets bean-classification:latest python Scripts/benchmark_models.py
-```
+### Final Jenkins pipeline stages
+1. **Checkout** - pull branch source.
+2. **Build Docker Image** - build `bean-classification:${BUILD_NUMBER}`.
+3. **Run Data Alignment** - generate `train_dataset.csv` and copy it into Jenkins workspace in the same container lifecycle.
+4. **Run Model Benchmarking** - train/evaluate models and persist model/report outputs.
+5. **Generate Visualizations** - produce `performance_chart.png`.
+6. **Archive Artifacts to VM** - copy models/reports/chart/config to output directory and archive in Jenkins.
+7. **Cleanup** - remove build image.
 
-#### 2. Jenkins Declarative Pipeline with Shared Libraries
-- **Jenkinsfile**: Orchestrates the CI/CD pipeline using modular vars/ pattern
-- **vars/docker.groovy**: Docker operations (build, run, remove)
-- **vars/artifactory.groovy**: JFrog Artifactory upload operations
-- **vars/pipeline.groovy**: Stage definitions for ML pipeline execution
+### Important implementation notes
+- Data alignment uses the container's built-in source dataset and copies generated `train_dataset.csv` to mounted workspace path.
+- `vars/docker.groovy` executes commands using `sh -c` inside container so compound commands run in-container.
+- Visualization font is set to a container-safe default (`DejaVu Sans`) to avoid font warnings in Linux/Jenkins containers.
 
-**Pipeline Stages:**
-- **Checkout**: Source code retrieval
-- **Build Docker Image**: Container image creation
-- **Run Data Alignment**: Preprocessing pipeline execution
-- **Run Model Benchmarking**: Multi-model evaluation
-- **Generate Visualizations**: Performance chart creation
-- **Archive Artifacts to VM**: Save outputs to VM storage
-- **Upload to JFrog Artifactory**: Push artifacts to artifact repository
-- **Cleanup**: Remove temporary Docker images
-
-**Pipeline Configuration:**
-```groovy
-environment {
-    DOCKER_IMAGE = 'bean-classification:${BUILD_NUMBER}'
-    ARTIFACTORY_URL = 'http://your-jfrog-artifactory-url/artifactory'
-    ARTIFACTORY_REPO = 'ml-models'
-    ARTIFACTORY_CREDENTIALS = 'jfrog-credentials'
-    OUTPUT_DIR = '/tmp/bean-classification-output'
-}
-```
-
-**vars/ Pattern Benefits:**
-- **Modularity**: Reusable Groovy functions across multiple pipelines
-- **Maintainability**: Easier to update and test individual components
-- **Separation of Concerns**: Pipeline orchestration vs. implementation logic
-- **Testing**: Individual groovy functions can be tested independently
-- **Scalability**: Easy to add new stages or modify existing ones
-
-#### 3. JFrog Artifactory Integration
-Artifacts uploaded to JFrog Artifactory include:
-- `best_model.joblib` - Trained SVM model
-- `model_metadata.json` - Model configuration and features
-- `benchmark_results.csv` - All model performance metrics
-- `best_model_metrics.json` - Best model detailed metrics
-- `performance_chart.png` - Visualization of results
-- `benchmark_config.yaml` - Configuration used for training
-
-**Artifacts are organized by build number:**
-```
-ml-models/bean-classification/{BUILD_NUMBER}/
-├── best_model.joblib
-├── model_metadata.json
-├── benchmark_results.csv
-├── best_model_metrics.json
-├── performance_chart.png
-└── benchmark_config.yaml
-```
-
-### Jenkins Setup Instructions
-
-1. **Install Required Plugins:**
+### Jenkins setup (current)
+1. Install required plugins:
    - Docker Pipeline
-   - JFrog Artifactory
-   - Credentials Binding
+   - Credentials Binding (for SCM credentials or other Jenkins credentials you use)
+2. Create pipeline job:
+   - **Pipeline script from SCM**
+   - repository URL
+   - branch: `usr/Jagadev/Phase3`
+   - script path: `Jenkinsfile`
+3. Ensure Jenkins agent can access Docker daemon.
+4. Run **Build Now** and monitor stages.
 
-2. **Configure Credentials:**
-   - Add JFrog Artifactory credentials (username/password)
-   - Credential ID: `jfrog-credentials`
-
-3. **Create Pipeline Job:**
-   - New Item → Pipeline
-   - Pipeline script from SCM
-   - Select Git and provide repository URL
-   - Script path: `Jenkinsfile`
-
-4. **Run Pipeline:**
-   - Click "Build Now"
-   - Monitor stages in Jenkins UI
-   - Artifacts archived in Jenkins workspace
-   - Artifacts uploaded to JFrog Artifactory
-
-### Phase3 Project Structure
+### Phase3 project structure
 
 ```
 Karunadu Project/
-├── Dockerfile                      # Docker container definition
-├── docker-compose.yml              # Docker Compose configuration
-├── Jenkinsfile                     # Jenkins declarative pipeline (orchestration)
-├── .dockerignore                   # Docker build exclusions
-├── vars/                           # Shared library pattern for Jenkins
-│   ├── docker.groovy               # Docker operations
-│   ├── artifactory.groovy          # JFrog Artifactory operations
-│   └── pipeline.groovy             # Stage definitions
+├── Dockerfile
+├── docker-compose.yml
+├── Jenkinsfile
+├── .dockerignore
+├── pipeline-main.groovy
+├── vars/
+│   ├── docker.groovy
+│   └── pipeline.groovy
 ├── config/
 │   └── benchmark_config.yaml
 ├── Data_sets/
@@ -291,13 +238,10 @@ Karunadu Project/
 ```
 
 ### Benefits
-
-- **Reproducibility**: Docker ensures consistent environments across development, testing, and production
-- **Automation**: Jenkins automates the entire ML pipeline from code to artifact
-- **Scalability**: Containerized application can be deployed anywhere
-- **Artifact Management**: JFrog Artifactory provides versioned artifact storage
-- **Traceability**: Build numbers link code commits to generated artifacts
-- **Production-Ready**: Complete CI/CD pipeline suitable for enterprise deployment
+- **Reproducibility**: consistent runtime through Docker image build.
+- **Automation**: end-to-end CI execution in Jenkins.
+- **Traceability**: build-numbered Docker image and archived artifacts per run.
+- **Operational simplicity**: no external artifact repository dependency for current scope.
 
 ---
 
