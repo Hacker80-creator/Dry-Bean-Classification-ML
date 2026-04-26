@@ -66,7 +66,7 @@ pipeline {
             steps {
                 script {
                     def pipeline = load 'vars/pipeline.groovy'
-                    pipeline.uploadToArtifactory(env.ARTIFACTORY_URL, env.ARTIFACTORY_REPO, env.BUILD_NUMBER, env.WORKSPACE)
+                    pipeline.uploadToArtifactory(env.ARTIFACTORY_URL, env.ARTIFACTORY_REPO, env.BUILD_NUMBER, env.WORKSPACE, env.ARTIFACTORY_CREDENTIALS)
                 }
             }
         }

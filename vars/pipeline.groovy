@@ -48,7 +48,7 @@ def archiveArtifacts(String workspace, String outputDir) {
                  allowEmptyArchive: false
 }
 
-def uploadToArtifactory(String artifactoryUrl, String repo, String buildNumber, String workspace) {
+def uploadToArtifactory(String artifactoryUrl, String repo, String buildNumber, String workspace, String credentialsId = 'jfrog-credentials') {
     echo 'Uploading artifacts to JFrog Artifactory...'
     def artifactory = load 'vars/artifactory.groovy'
     
@@ -61,7 +61,7 @@ def uploadToArtifactory(String artifactoryUrl, String repo, String buildNumber, 
         "${workspace}/config/benchmark_config.yaml": "benchmark_config.yaml"
     ]
     
-    artifactory.uploadArtifacts(artifactoryUrl, repo, buildNumber, artifacts)
+    artifactory.uploadArtifacts(artifactoryUrl, repo, buildNumber, artifacts, credentialsId)
     echo "All artifacts uploaded to JFrog Artifactory"
 }
 

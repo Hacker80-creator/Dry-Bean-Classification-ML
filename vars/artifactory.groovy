@@ -1,9 +1,9 @@
 // JFrog Artifactory operations for artifact management
 
-def uploadFile(String artifactoryUrl, String repo, String buildNumber, String localPath, String targetPath) {
+def uploadFile(String artifactoryUrl, String repo, String buildNumber, String localPath, String targetPath, String credentialsId = 'jfrog-credentials') {
     echo "Uploading ${localPath} to Artifactory"
     withCredentials([usernamePassword(
-        credentialsId: 'jfrog-credentials',
+        credentialsId: credentialsId,
         usernameVariable: 'ARTIFACTORY_USER',
         passwordVariable: 'ARTIFACTORY_PASSWORD'
     )]) {
@@ -16,10 +16,10 @@ def uploadFile(String artifactoryUrl, String repo, String buildNumber, String lo
     echo "File uploaded successfully"
 }
 
-def uploadArtifacts(String artifactoryUrl, String repo, String buildNumber, Map artifacts) {
+def uploadArtifacts(String artifactoryUrl, String repo, String buildNumber, Map artifacts, String credentialsId = 'jfrog-credentials') {
     echo "Uploading ${artifacts.size()} artifacts to Artifactory"
     artifacts.each { localPath, targetPath ->
-        uploadFile(artifactoryUrl, repo, buildNumber, localPath, targetPath)
+        uploadFile(artifactoryUrl, repo, buildNumber, localPath, targetPath, credentialsId)
     }
     echo "All artifacts uploaded to ${artifactoryUrl}/${repo}/bean-classification/${buildNumber}/"
 }
