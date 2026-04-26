@@ -118,7 +118,7 @@ To customize the benchmark:
 
 ## Performance Visualization
 
-![Benchmark Results](performance_chart.png)
+The benchmark chart (`performance_chart.png`) is generated during pipeline execution and archived as a Jenkins artifact.
 
 The visualization includes:
 - Holdout accuracy comparison across all models
