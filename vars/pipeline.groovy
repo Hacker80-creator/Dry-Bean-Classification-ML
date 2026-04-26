@@ -8,7 +8,7 @@ def runDataAlignment(String imageName, String workspace) {
         "${workspace}/config": '/app/config',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
-    ], '/app')
+    ], null)
     echo 'Data alignment completed'
 }
 
@@ -20,7 +20,7 @@ def runModelBenchmarking(String imageName, String workspace) {
         "${workspace}/config": '/app/config',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
-    ], '/app')
+    ], null)
     echo 'Model benchmarking completed'
 }
 
@@ -31,7 +31,7 @@ def generateVisualizations(String imageName, String workspace) {
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/config": '/app/config',
         "${workspace}/reports": '/app/reports'
-    ], '/app')
+    ], null)
     echo 'Visualizations generated'
 }
 
