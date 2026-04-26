@@ -48,21 +48,4 @@ def archiveArtifacts(String workspace, String outputDir) {
                  allowEmptyArchive: false
 }
 
-def uploadToArtifactory(String artifactoryUrl, String repo, String buildNumber, String workspace, String credentialsId = 'jfrog-credentials') {
-    echo 'Uploading artifacts to JFrog Artifactory...'
-    def artifactory = load 'vars/artifactory.groovy'
-    
-    def artifacts = [
-        "${workspace}/models/best_model.joblib": "best_model.joblib",
-        "${workspace}/models/model_metadata.json": "model_metadata.json",
-        "${workspace}/reports/benchmark_results.csv": "benchmark_results.csv",
-        "${workspace}/reports/best_model_metrics.json": "best_model_metrics.json",
-        "${workspace}/performance_chart.png": "performance_chart.png",
-        "${workspace}/config/benchmark_config.yaml": "benchmark_config.yaml"
-    ]
-    
-    artifactory.uploadArtifacts(artifactoryUrl, repo, buildNumber, artifacts, credentialsId)
-    echo "All artifacts uploaded to JFrog Artifactory"
-}
-
 return this

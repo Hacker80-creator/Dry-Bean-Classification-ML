@@ -4,9 +4,6 @@ def call() {
 
         environment {
             DOCKER_IMAGE = 'bean-classification:${BUILD_NUMBER}'
-            ARTIFACTORY_URL = 'http://your-jfrog-artifactory-url/artifactory'
-            ARTIFACTORY_REPO = 'ml-models'
-            ARTIFACTORY_CREDENTIALS = 'jfrog-credentials'
             OUTPUT_DIR = '/tmp/bean-classification-output'
         }
 
@@ -58,14 +55,6 @@ def call() {
                 }
             }
 
-            stage('Upload to JFrog Artifactory') {
-                steps {
-                    script {
-                        pipeline.uploadToArtifactory(env.ARTIFACTORY_URL, env.ARTIFACTORY_REPO, env.BUILD_NUMBER, env.WORKSPACE)
-                    }
-                }
-            }
-
             stage('Cleanup') {
                 steps {
                     script {
@@ -79,7 +68,6 @@ def call() {
             success {
                 echo 'Pipeline completed successfully!'
                 echo 'Artifacts are available in VM at: ${OUTPUT_DIR}'
-                echo 'Artifacts uploaded to JFrog Artifactory at: ${ARTIFACTORY_URL}/${ARTIFACTORY_REPO}/bean-classification/${BUILD_NUMBER}/'
             }
             failure {
                 echo 'Pipeline failed. Check logs for details.'
