@@ -13,6 +13,7 @@ Data_sets/train_dataset.csv
 models/best_model.joblib
 models/model_metadata.json
 reports/best_model_metrics.json
+<<<<<<< HEAD
 performance_chart.png
 
 # Docker
@@ -22,3 +23,6 @@ performance_chart.png
 Pkl/
 knn_classifier_model.pkl
 scaler.pkl
+=======
+performance_chart.png
+>>>>>>> origin/main
