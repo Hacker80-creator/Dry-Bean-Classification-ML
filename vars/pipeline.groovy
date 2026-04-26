@@ -27,7 +27,8 @@ def runModelBenchmarking(String imageName, String workspace) {
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
+    docker.runCommand(imageName, 'python Scripts/visualize_results.py && cp /app/performance_chart.png /workspace/reports/', [
+        "${workspace}": '/workspace',
         "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/reports": '/app/reports'
     ], '/app')
