@@ -2,30 +2,22 @@
 
 def runDataAlignment(String imageName, String workspace) {
     echo 'Running data alignment pipeline...'
-    sh "ls -la ${workspace}"
-    sh "ls -la ${workspace}/Scripts || echo 'Scripts directory not found'"
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
-        "${workspace}": '/workspace'
-    ], '/workspace')
+    docker.runCommand(imageName, 'python Scripts/data_alignment.py', [:], '/app')
     echo 'Data alignment completed'
 }
 
 def runModelBenchmarking(String imageName, String workspace) {
     echo 'Running model benchmarking...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
-        "${workspace}": '/workspace'
-    ], '/workspace')
+    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [:], '/app')
     echo 'Model benchmarking completed'
 }
 
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
-        "${workspace}": '/workspace'
-    ], '/workspace')
+    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [:], '/app')
     echo 'Visualizations generated'
 }
 
