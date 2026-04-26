@@ -4,7 +4,6 @@ def runDataAlignment(String imageName, String workspace) {
     echo 'Running data alignment pipeline...'
     def docker = load 'vars/docker.groovy'
     docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
-        "${workspace}/Data_sets": '/app/Data_sets',
         "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
     ], '/app')
