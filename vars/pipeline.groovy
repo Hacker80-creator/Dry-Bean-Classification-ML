@@ -3,21 +3,38 @@
 def runDataAlignment(String imageName, String workspace) {
     echo 'Running data alignment pipeline...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/data_alignment.py', [:], '/app')
+    docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
+        "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/config": '/app/config',
+        "${workspace}/Scripts": '/app/Scripts',
+        "${workspace}/models": '/app/models',
+        "${workspace}/reports": '/app/reports'
+    ], '/app')
     echo 'Data alignment completed'
 }
 
 def runModelBenchmarking(String imageName, String workspace) {
     echo 'Running model benchmarking...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [:], '/app')
+    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
+        "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/config": '/app/config',
+        "${workspace}/Scripts": '/app/Scripts',
+        "${workspace}/models": '/app/models',
+        "${workspace}/reports": '/app/reports'
+    ], '/app')
     echo 'Model benchmarking completed'
 }
 
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [:], '/app')
+    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
+        "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/config": '/app/config',
+        "${workspace}/Scripts": '/app/Scripts',
+        "${workspace}/reports": '/app/reports'
+    ], '/app')
     echo 'Visualizations generated'
 }
 
