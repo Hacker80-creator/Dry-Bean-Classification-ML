@@ -1,0 +1,21 @@
+paths:
+  data_path: Data_sets/train_dataset.csv
+  model_dir: models
+  report_dir: reports
+  model_path: models/best_model.joblib
+  metadata_path: models/model_metadata.json
+  chart_output_path: performance_chart.png
+
+training:
+  random_state: 50
+  cv_splits: 5
+  test_size: 0.2
+
+models:
+  enabled:
+    - logistic_regression
+    - knn
+    - decision_tree
+    - random_forest
+    - svm
+    - gaussian_nb

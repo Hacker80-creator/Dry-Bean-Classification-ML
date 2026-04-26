@@ -1,0 +1,7 @@
+model_name,cv_accuracy_mean,cv_accuracy_std,holdout_accuracy,holdout_macro_f1
+svm,0.9275,0.01255,0.942,0.949826
+logistic_regression,0.9235,0.008155,0.94,0.947524
+knn,0.915,0.013874,0.94,0.947075
+random_forest,0.918,0.007649,0.934,0.940384
+gaussian_nb,0.9075,0.009354,0.914,0.919223
+decision_tree,0.898,0.016233,0.91,0.919165

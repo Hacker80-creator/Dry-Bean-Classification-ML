@@ -1,35 +1,55 @@
+import json
+import os
+
 import joblib
-import numpy as np
 import pandas as pd
+from config_utils import load_config
 
-# 1. Load the "Brain" and "Ruler"
-model = joblib.load('knn_classifier_model.pkl')
-scaler = joblib.load('scaler.pkl')
 
-# 2. Get the actual feature names from the dataset
-data = pd.read_csv('Data_sets/train_dataset.csv')
-features = data.drop(columns=['Class']).columns.tolist()
+def get_feature_columns(data_path: str, meta_path: str):
+    if os.path.exists(meta_path):
+        with open(meta_path, "r", encoding="utf-8") as f:
+            meta = json.load(f)
+            if "feature_columns" in meta:
+                return meta["feature_columns"]
 
-print(f"--- Bean Type Predictor ({len(features)} Features Required) ---")
+    data = pd.read_csv(data_path)
+    drop_cols = ["Class", "Class_Encoded", "Unnamed: 0"]
+    return [c for c in data.columns if c not in drop_cols]
 
-try:
+
+def main():
+    config = load_config()
+    model_path = config["paths"]["model_path"]
+    meta_path = config["paths"]["metadata_path"]
+    data_path = config["paths"]["data_path"]
+
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(
+            "Model not found. Run python Scripts/benchmark_models.py first."
+        )
+
+    model = joblib.load(model_path)
+    features = get_feature_columns(data_path=data_path, meta_path=meta_path)
+    print(f"--- Bean Type Predictor ({len(features)} Features Required) ---")
+
     user_values = []
     for col in features:
         val = float(input(f"Enter {col}: "))
         user_values.append(val)
 
-    # 3. Create a DataFrame so the Scaler doesn't give a "Warning"
     input_df = pd.DataFrame([user_values], columns=features)
+    prediction = model.predict(input_df)
 
-    # 4. Scale and Predict
-    scaled_data = scaler.transform(input_df)
-    prediction = model.predict(scaled_data)
-
-    print("\n" + "="*30)
+    print("\n" + "=" * 30)
     print(f"RESULT: This bean is a '{prediction[0]}'")
-    print("="*30)
+    print("=" * 30)
 
-except ValueError as e:
-    print(f"\n Error: {e}")
-except Exception as e:
-    print(f"\n Unexpected Error: {e}")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except ValueError as e:
+        print(f"\nError: {e}")
+    except Exception as e:
+        print(f"\nUnexpected Error: {e}")
