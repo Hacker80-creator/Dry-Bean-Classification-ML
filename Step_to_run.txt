@@ -1,0 +1,182 @@
+Dry Bean Classification Project - End-to-End Run Steps
+======================================================
+
+Prerequisites
+-------------
+1) Git installed
+2) Python 3.9+ installed
+3) Docker Desktop installed and running
+4) Jenkins running (container or VM)
+5) Internet access to pull Python packages
+
+------------------------------------------------------
+A) Local Run (without Jenkins)
+------------------------------------------------------
+
+1. Clone and enter project
+   git clone https://github.com/Hacker80-creator/Dry-Bean-Classification-ML.git
+   cd Dry-Bean-Classification-ML
+
+2. Create virtual environment
+   python -m venv .venv
+
+3. Activate virtual environment
+   Windows:
+     .\.venv\Scripts\activate
+   Linux/Mac:
+     source .venv/bin/activate
+
+4. Install dependencies
+   pip install -r requirements.txt
+
+5. Run data alignment
+   python Scripts/data_alignment.py
+
+6. Run model benchmark
+   python Scripts/benchmark_models.py
+
+7. Generate visualization
+   python Scripts/visualize_results.py
+
+8. Check outputs
+   - Data_sets/train_dataset.csv
+   - models/best_model.joblib
+   - models/model_metadata.json
+   - reports/benchmark_results.csv
+   - reports/best_model_metrics.json
+   - performance_chart.png
+
+------------------------------------------------------
+B) Docker Run (manual, without Jenkins)
+------------------------------------------------------
+
+1. Build Docker image
+   docker build -t bean-classification:local .
+
+2. Run data alignment + persist dataset to host workspace
+   docker run --rm ^
+     -v %cd%:/workspace ^
+     -v %cd%/models:/app/models ^
+     -v %cd%/reports:/app/reports ^
+     -w /app ^
+     bean-classification:local ^
+     sh -c "python Scripts/data_alignment.py && mkdir -p /workspace/Data_sets && cp /app/Data_sets/train_dataset.csv /workspace/Data_sets/"
+
+3. Run benchmarking
+   docker run --rm ^
+     -v %cd%/Data_sets:/app/Data_sets ^
+     -v %cd%/models:/app/models ^
+     -v %cd%/reports:/app/reports ^
+     -w /app ^
+     bean-classification:local ^
+     sh -c "python Scripts/benchmark_models.py"
+
+4. Run visualizations
+   docker run --rm ^
+     -v %cd%/Data_sets:/app/Data_sets ^
+     -v %cd%/reports:/app/reports ^
+     -w /app ^
+     bean-classification:local ^
+     sh -c "python Scripts/visualize_results.py"
+
+5. Verify outputs in local folders
+   - Data_sets, models, reports, performance_chart.png
+
+------------------------------------------------------
+C) Jenkins End-to-End Run (Current Phase3 Flow)
+------------------------------------------------------
+
+1. Ensure Jenkins is running and can access Docker daemon.
+   - If Jenkins in container, Docker host should be reachable.
+
+2. Create Jenkins pipeline job
+   - New Item -> Pipeline
+   - Pipeline script from SCM
+   - SCM: Git
+   - Repository URL: your repo URL
+   - Branch: usr/Jagadev/Phase3 (or your target branch)
+   - Script Path: Jenkinsfile
+
+3. Build Now
+
+4. Expected Jenkins stages
+   - Checkout
+   - Build Docker Image
+   - Run Data Alignment
+   - Run Model Benchmarking
+   - Generate Visualizations
+   - Archive Artifacts to VM
+   - Cleanup
+
+5. Confirm success
+   - Console ends with: Finished: SUCCESS
+   - Jenkins Last Successful Artifacts should include:
+     benchmark_config.yaml
+     best_model.joblib
+     model_metadata.json
+     performance_chart.png
+     benchmark_results.csv
+     best_model_metrics.json
+
+------------------------------------------------------
+D) Check VM/Container Output Folder
+------------------------------------------------------
+
+Current pipeline output path:
+   /tmp/bean-classification-output
+
+If Jenkins runs in Docker container:
+1) Find container name
+   docker ps
+
+2) Enter Jenkins container
+   docker exec -it <jenkins-container-name> bash
+
+3) Verify files
+   ls -lah /tmp/bean-classification-output
+   ls -lah /tmp/bean-classification-output/models
+   ls -lah /tmp/bean-classification-output/reports
+
+Optional: Copy output to host
+   docker cp <jenkins-container-name>:/tmp/bean-classification-output ./bean-output
+
+If Jenkins runs on Linux VM directly:
+1) SSH to VM
+   ssh <user>@<vm-ip>
+
+2) Check folder
+   ls -lah /tmp/bean-classification-output
+
+------------------------------------------------------
+E) Common Troubleshooting
+------------------------------------------------------
+
+1) train_dataset.csv missing in benchmark stage
+   - Ensure data alignment stage copies file to workspace Data_sets
+   - Confirm Data_sets is mounted in benchmark stage
+
+2) Docker permission issues
+   - Ensure Jenkins user can run docker commands
+   - Check Docker daemon availability
+
+3) Font warnings in visualization
+   - Fixed by using DejaVu Sans in visualize_results.py
+
+4) Workspace cleanup removed files
+   - Jenkins cleanWs() removes workspace after run
+   - Use archived artifacts or VM output path for retrieval
+
+------------------------------------------------------
+F) Final Expected Artifacts
+------------------------------------------------------
+
+Primary:
+- models/best_model.joblib
+- models/model_metadata.json
+- reports/benchmark_results.csv
+- reports/best_model_metrics.json
+- performance_chart.png
+- config/benchmark_config.yaml
+
+Intermediate:
+- Data_sets/train_dataset.csv
