@@ -3,7 +3,7 @@
 def runDataAlignment(String imageName, String workspace) {
     echo 'Running data alignment pipeline...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
+    docker.runCommand(imageName, 'python /app/Scripts/data_alignment.py', [
         "${workspace}": '/app'
     ], null)
     echo 'Data alignment completed'
@@ -12,7 +12,7 @@ def runDataAlignment(String imageName, String workspace) {
 def runModelBenchmarking(String imageName, String workspace) {
     echo 'Running model benchmarking...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
+    docker.runCommand(imageName, 'python /app/Scripts/benchmark_models.py', [
         "${workspace}": '/app'
     ], null)
     echo 'Model benchmarking completed'
@@ -21,7 +21,7 @@ def runModelBenchmarking(String imageName, String workspace) {
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
+    docker.runCommand(imageName, 'python /app/Scripts/visualize_results.py', [
         "${workspace}": '/app'
     ], null)
     echo 'Visualizations generated'
