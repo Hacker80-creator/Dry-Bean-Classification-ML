@@ -4,7 +4,7 @@ paths:
   report_dir: reports
   model_path: models/best_model.joblib
   metadata_path: models/model_metadata.json
-  chart_output_path: performance_chart.png
+  chart_output_path: reports/performance_chart.png
 
 training:
   random_state: 50
