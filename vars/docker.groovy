@@ -9,11 +9,13 @@ def buildImage(String imageName, String contextDir = '.') {
 def runCommand(String imageName, String command, Map volumeMounts = [:], String workDir = null) {
     def volumeArgs = volumeMounts.collect { k, v -> "-v ${k}:${v}" }.join(' ')
     def workDirArg = workDir ? "-w ${workDir}" : ""
+    // Ensure compound commands (&&, ;, pipes) run inside the container shell.
+    def escapedCommand = command.replace("'", "'\"'\"'")
     echo "Running command in container: ${command}"
     sh """
         docker run --rm ${volumeArgs} ${workDirArg} \
             ${imageName} \
-            ${command}
+            sh -c '${escapedCommand}'
     """
 }
 
