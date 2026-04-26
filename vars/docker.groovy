@@ -6,11 +6,12 @@ def buildImage(String imageName, String contextDir = '.') {
     echo "Docker image built successfully"
 }
 
-def runCommand(String imageName, String command, Map volumeMounts = [:]) {
+def runCommand(String imageName, String command, Map volumeMounts = [:], String workDir = null) {
     def volumeArgs = volumeMounts.collect { k, v -> "-v ${k}:${v}" }.join(' ')
+    def workDirArg = workDir ? "-w ${workDir}" : ""
     echo "Running command in container: ${command}"
     sh """
-        docker run --rm ${volumeArgs} \
+        docker run --rm ${volumeArgs} ${workDirArg} \
             ${imageName} \
             ${command}
     """

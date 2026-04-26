@@ -7,7 +7,7 @@ def runDataAlignment(String imageName, String workspace) {
     def docker = load 'vars/docker.groovy'
     docker.runCommand(imageName, 'python Scripts/data_alignment.py', [
         "${workspace}": '/workspace'
-    ])
+    ], '/workspace')
     echo 'Data alignment completed'
 }
 
@@ -16,7 +16,7 @@ def runModelBenchmarking(String imageName, String workspace) {
     def docker = load 'vars/docker.groovy'
     docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
         "${workspace}": '/workspace'
-    ])
+    ], '/workspace')
     echo 'Model benchmarking completed'
 }
 
@@ -25,7 +25,7 @@ def generateVisualizations(String imageName, String workspace) {
     def docker = load 'vars/docker.groovy'
     docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
         "${workspace}": '/workspace'
-    ])
+    ], '/workspace')
     echo 'Visualizations generated'
 }
 
