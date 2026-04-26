@@ -247,6 +247,12 @@ Archived artifacts visible in Jenkins:
 - `benchmark_results.csv`
 - `best_model_metrics.json`
 
+### Jenkins artifact snapshot
+
+The following screenshot shows the successful Jenkins run and archived artifacts for the pipeline.
+
+![Jenkins Last Successful Artifacts](docs/jenkins-build-30-success.png)
+
 ### Phase3 project structure
 
 ```
