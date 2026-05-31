@@ -49,7 +49,7 @@ def archiveArtifacts(String workspace, String outputDir) {
         cp ${workspace}/config/benchmark_config.yaml ${outputDir}/
         echo "Artifacts archived to ${outputDir}"
     """
-    archiveArtifacts artifacts: 'models/**, reports/**, performance_chart.png, config/benchmark_config.yaml', 
+    archiveArtifacts artifacts: 'models/**, reports/**, performance_chart.png, config/benchmark_config.yaml',
                  allowEmptyArchive: false
 }
 

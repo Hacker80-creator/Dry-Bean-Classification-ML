@@ -38,12 +38,22 @@ A) Local Run (without Jenkins)
 7. Generate visualization
    python Scripts/visualize_results.py
 
-8. Check outputs
+8. (Optional) Generate SHAP feature importance
+   python Scripts/explain_model.py
+
+9. (Optional) Start prediction API
+   python app.py
+
+10. Check outputs
    - Data_sets/train_dataset.csv
    - models/best_model.joblib
    - models/model_metadata.json
    - reports/benchmark_results.csv
    - reports/best_model_metrics.json
+   - reports/confusion_matrix.json
+   - reports/classification_report.json
+   - reports/learning_curves.png
+   - reports/shap_importance.png (if explain_model.py was run)
    - performance_chart.png
 
 ------------------------------------------------------

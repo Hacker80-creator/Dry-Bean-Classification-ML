@@ -276,5 +276,48 @@ Karunadu Project/
 
 ---
 
+## Project Improvements
+
+### Hyperparameter Tuning
+Models are tuned using GridSearchCV with 5-fold Stratified CV. Best parameters are saved in `models/model_metadata.json`.
+
+### Model Explainability
+SHAP (SHapley Additive exPlanations) provides feature importance analysis. Run:
+
+```powershell
+python Scripts\explain_model.py
+```
+
+### API Endpoint
+
+```powershell
+python app.py
+```
+
+```powershell
+curl http://localhost:5000/health
+curl -X POST http://localhost:5000/predict -H "Content-Type: application/json" -d "{\"features\": [28395, 610.29, ...]}"
+```
+
+### EDA Notebook
+See `notebooks/EDA.ipynb` for exploratory data analysis including:
+- Class distribution analysis
+- Feature distributions and skewness
+- Correlation heatmap
+- Outlier detection
+- Feature-target relationships
+
+### Extended Pipeline (optional steps)
+
+```powershell
+python Scripts\data_alignment.py
+python Scripts\benchmark_models.py
+python Scripts\visualize_results.py
+python Scripts\explain_model.py
+python app.py
+```
+
+---
+
 ## License
 This project is released under the MIT License. Feel free to use, modify, and distribute as per the license terms.
