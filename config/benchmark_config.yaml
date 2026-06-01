@@ -4,12 +4,17 @@ paths:
   report_dir: reports
   model_path: models/best_model.joblib
   metadata_path: models/model_metadata.json
-  chart_output_path: performance_chart.png
+  chart_output_path: reports/performance_chart.png
 
 training:
   random_state: 50
   cv_splits: 5
   test_size: 0.2
+  n_jobs: -1
+  enable_tuning: true
+  tuning_top_n: 3
+  enable_learning_curves: true
+  learning_curve_points: 5
 
 models:
   enabled:

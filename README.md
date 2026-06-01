@@ -4,10 +4,11 @@
 This repository implements an end-to-end machine learning pipeline designed to classify seven distinct varieties of dry beans utilizing high-dimensional morphological and geometric data. The project features a comprehensive model benchmarking framework that evaluates multiple algorithms to identify the optimal classifier for automated agricultural sorting.
 
 ### Technical Performance
-* **Best Model Accuracy:** 94.2% (Support Vector Machine with RBF Kernel)
-* **Feature Space:** 21-Dimensional (Morphological & Geometric)
-* **Dataset Size:** 2,500 samples with 7 bean classes
+* **Best Model Accuracy:** 93.65% (Support Vector Machine with RBF Kernel, tuned)
+* **Feature Space:** 21-Dimensional (Morphological & Geometric + 5 Engineered Features)
+* **Dataset Size:** 13,611 samples with 7 bean classes
 * **Evaluation Method:** 5-fold Stratified Cross-Validation + Holdout Test Set
+* **Macro F1 Score:** 0.9464
 
 ---
 
@@ -35,11 +36,17 @@ The project utilizes a **modular, configuration-driven architecture** with stric
 * **`Scripts/data_alignment.py`**: Data preprocessing pipeline that ensures dataset consistency
 * **`Scripts/benchmark_models.py`**: Model benchmarking engine with cross-validation and automated evaluation
 * **`Scripts/visualize_results.py`**: Visualization module for generating performance charts
+* **`Scripts/explain_model.py`**: SHAP-based model explainability
 * **`Scripts/config_utils.py`**: Configuration loading utilities
+* **`app.py`**: Flask REST API for model inference
 * **`models/best_model.joblib`**: Serialized best-performing model (SVM)
 * **`models/model_metadata.json`**: Model metadata and feature information
 * **`reports/benchmark_results.csv`**: Complete benchmark results for all models
 * **`reports/best_model_metrics.json`**: Detailed metrics for the best model
+* **`reports/confusion_matrix.json`**: Confusion matrix for best model
+* **`reports/classification_report.json`**: Per-class precision/recall/F1 scores
+* **`reports/shap_importance.png`**: SHAP feature importance visualization
+* **`reports/learning_curves.png`**: Learning curves for bias/variance analysis
 
 ---
 
@@ -71,6 +78,12 @@ python Scripts\benchmark_models.py
 
 # Step 3: Generate visualizations
 python Scripts\visualize_results.py
+
+# Step 4: Model explainability (optional)
+python Scripts\explain_model.py
+
+# Step 5: Start Flask API (optional)
+python app.py
 ```
 
 ### 3. View Results
@@ -80,6 +93,18 @@ notepad reports\benchmark_results.csv
 
 # View best model details
 notepad reports\best_model_metrics.json
+
+# View confusion matrix
+notepad reports\confusion_matrix.json
+
+# View classification report
+notepad reports\classification_report.json
+
+# View SHAP importance visualization
+start reports\shap_importance.png
+
+# View learning curves
+start reports\learning_curves.png
 ```
 
 ---
@@ -118,13 +143,30 @@ To customize the benchmark:
 
 ## Performance Visualization
 
-The benchmark chart (`performance_chart.png`) is generated during pipeline execution and archived as a Jenkins artifact.
+### Main Performance Dashboard
+The benchmark chart (`performance_chart.png`) shows all key metrics in one comprehensive view:
+
+![Performance Chart](performance_chart.png)
 
 The visualization includes:
 - Holdout accuracy comparison across all models
 - Cross-validation vs holdout accuracy scatter plot
 - Macro F1 score comparison
+- Confusion matrix heatmap (best model)
+- Per-class accuracy bar chart
 - Comprehensive metrics table with best model highlighted
+
+### Additional Visualizations
+
+#### Learning Curves
+Bias/variance analysis showing training vs validation accuracy across dataset sizes:
+
+![Learning Curves](reports/learning_curves.png)
+
+#### SHAP Feature Importance
+Feature importance visualization showing which features drive predictions:
+
+![SHAP Importance](reports/shap_importance.png)
 
 ---
 
@@ -132,13 +174,14 @@ The visualization includes:
 
 | Metric | Value |
 | :--- | :--- |
-| **Best Model** | **SVM (RBF Kernel)** |
-| **Best Holdout Accuracy** | **94.20%** |
-| **Best Macro F1 Score** | **0.9498** |
-| **Dataset Size** | 2,500 samples |
-| **Feature Count** | 21 morphological features |
+| **Best Model** | **SVM (RBF Kernel, tuned)** |
+| **Best Holdout Accuracy** | **93.65%** |
+| **Best Macro F1 Score** | **0.9464** |
+| **Dataset Size** | 13,611 samples |
+| **Feature Count** | 21 morphological features + 5 engineered features |
 | **Number of Classes** | 7 bean varieties |
 | **Cross-Validation** | 5-fold Stratified |
+| **Hyperparameter Tuning** | GridSearchCV on top 3 models |
 
 ---
 
@@ -156,12 +199,20 @@ Karunadu Project/
 │   └── model_metadata.json         # Model metadata
 ├── reports/
 │   ├── benchmark_results.csv      # All model results
-│   └── best_model_metrics.json    # Best model details
+│   ├── best_model_metrics.json    # Best model details
+│   ├── confusion_matrix.json      # Confusion matrix
+│   ├── classification_report.json # Per-class metrics
+│   ├── shap_importance.png       # SHAP visualization
+│   └── learning_curves.png        # Learning curves
 ├── Scripts/
 │   ├── benchmark_models.py         # Benchmarking engine
 │   ├── data_alignment.py          # Data preprocessing
 │   ├── visualize_results.py       # Visualization generator
+│   ├── explain_model.py           # SHAP explainability
 │   └── config_utils.py            # Config utilities
+├── notebooks/
+│   └── EDA.ipynb                  # Exploratory data analysis
+├── app.py                          # Flask REST API
 ├── requirements.txt                # Python dependencies
 └── performance_chart.png          # Results visualization
 ```
@@ -211,17 +262,17 @@ Phase3 adds production-grade CI/CD capabilities using Dockerized execution and J
 2. Create pipeline job:
    - **Pipeline script from SCM**
    - repository URL
-   - branch: `usr/Jagadev/Phase3`
+   - branch: `usr/Jagadev/Enhancement`
    - script path: `Jenkinsfile`
 3. Ensure Jenkins agent can access Docker daemon.
 4. Run **Build Now** and monitor stages.
 
-### Jenkins run evidence (Build #30)
+### Jenkins run evidence (Build #54)
 
 Latest validated run completed with:
 - **Status**: `Finished: SUCCESS`
-- **Branch/Commit**: `usr/Jagadev/Phase3` / `02fc202`
-- **Image tag**: `bean-classification:30`
+- **Branch/Commit**: `usr/Jagadev/Enhancement` / `df48c52`
+- **Image tag**: `bean-classification:54`
 - **Jenkins UI**: Last Successful Build artifact panel confirms archived outputs.
 
 Stage completion observed in console output:
@@ -234,10 +285,11 @@ Stage completion observed in console output:
 - Cleanup
 
 Benchmark highlights from the same run:
-- **Best model**: `random_forest`
-- **Holdout Accuracy**: `0.9324` (93.24%)
-- **Macro F1 Score**: `0.942767`
-- **CV Accuracy**: `0.9235 +/- 0.0037`
+- **Best model**: `svm_tuned`
+- **Holdout Accuracy**: `0.9365` (93.65%)
+- **Macro F1 Score**: `0.9464`
+- **CV Accuracy**: `0.9303`
+- **Best params**: `{'model__C': 100, 'model__gamma': 'scale'}`
 
 Archived artifacts visible in Jenkins:
 - `benchmark_config.yaml`
@@ -246,6 +298,9 @@ Archived artifacts visible in Jenkins:
 - `performance_chart.png`
 - `benchmark_results.csv`
 - `best_model_metrics.json`
+- `confusion_matrix.json`
+- `classification_report.json`
+- `learning_curves.png`
 
 ### Phase3 project structure
 
@@ -273,6 +328,49 @@ Karunadu Project/
 - **Automation**: end-to-end CI execution in Jenkins.
 - **Traceability**: build-numbered Docker image and archived artifacts per run.
 - **Operational simplicity**: no external artifact repository dependency for current scope.
+
+---
+
+## Project Improvements
+
+### Hyperparameter Tuning
+Models are tuned using GridSearchCV with 5-fold Stratified CV. Best parameters are saved in `models/model_metadata.json`.
+
+### Model Explainability
+SHAP (SHapley Additive exPlanations) provides feature importance analysis. Run:
+
+```powershell
+python Scripts\explain_model.py
+```
+
+### API Endpoint
+
+```powershell
+python app.py
+```
+
+```powershell
+curl http://localhost:5000/health
+curl -X POST http://localhost:5000/predict -H "Content-Type: application/json" -d "{\"features\": [28395, 610.29, ...]}"
+```
+
+### EDA Notebook
+See `notebooks/EDA.ipynb` for exploratory data analysis including:
+- Class distribution analysis
+- Feature distributions and skewness
+- Correlation heatmap
+- Outlier detection
+- Feature-target relationships
+
+### Extended Pipeline (optional steps)
+
+```powershell
+python Scripts\data_alignment.py
+python Scripts\benchmark_models.py
+python Scripts\visualize_results.py
+python Scripts\explain_model.py
+python app.py
+```
 
 ---
 
