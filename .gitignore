@@ -10,19 +10,10 @@ __pycache__/
 
 # Generated artifacts (run-time outputs)
 Data_sets/train_dataset.csv
-models/best_model.joblib
-models/model_metadata.json
-reports/best_model_metrics.json
-reports/performance_chart.png
+models/*.joblib
+models/*.json
+reports/*.json
+reports/*.png
+performance_chart.png
 
-# Docker
-.dockerignore
 
-# Phase 1 artifacts
-Pkl/
-knn_classifier_model.pkl
-scaler.pkl
-
-# Local/temp extraction files
-action_plan_text.txt
-extract_pdf.py
