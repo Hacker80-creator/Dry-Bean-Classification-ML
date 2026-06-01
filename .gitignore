@@ -13,7 +13,7 @@ Data_sets/train_dataset.csv
 models/best_model.joblib
 models/model_metadata.json
 reports/best_model_metrics.json
-performance_chart.png
+reports/performance_chart.png
 
 # Docker
 .dockerignore

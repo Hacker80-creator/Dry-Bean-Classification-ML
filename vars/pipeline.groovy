@@ -27,18 +27,13 @@ def runModelBenchmarking(String imageName, String workspace) {
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    // Copy chart in the same container run (chart is written under /app, not on a mount).
-    docker.runCommand(
-        imageName,
-        'python Scripts/visualize_results.py && cp /app/performance_chart.png /workspace/',
-        [
-            "${workspace}": '/workspace',
-            "${workspace}/Data_sets": '/app/Data_sets',
-            "${workspace}/models": '/app/models',
-            "${workspace}/reports": '/app/reports'
-        ],
-        '/app'
-    )
+    // Chart is written to reports/ (mounted volume) — no extra cp to workspace root needed.
+    docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
+        "${workspace}": '/workspace',
+        "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/models": '/app/models',
+        "${workspace}/reports": '/app/reports'
+    ], '/app')
     echo 'Visualizations generated'
 }
 
@@ -48,16 +43,16 @@ def archiveArtifacts(String workspace, String outputDir) {
         mkdir -p ${outputDir}
         cp -r ${workspace}/models ${outputDir}/
         cp -r ${workspace}/reports ${outputDir}/
-        if [ -f ${workspace}/performance_chart.png ]; then
-            cp ${workspace}/performance_chart.png ${outputDir}/
+        if [ -f ${workspace}/reports/performance_chart.png ]; then
+            cp ${workspace}/reports/performance_chart.png ${outputDir}/performance_chart.png
         else
-            echo "WARNING: performance_chart.png not found in workspace"
+            echo "ERROR: reports/performance_chart.png not found"
             exit 1
         fi
         cp ${workspace}/config/benchmark_config.yaml ${outputDir}/
         echo "Artifacts archived to ${outputDir}"
     """
-    archiveArtifacts artifacts: 'models/**, reports/**, performance_chart.png, config/benchmark_config.yaml',
+    archiveArtifacts artifacts: 'models/**, reports/**, config/benchmark_config.yaml',
                  allowEmptyArchive: false
 }
 
