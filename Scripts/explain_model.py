@@ -54,9 +54,24 @@ def explain_model(config_path: str = "config/benchmark_config.yaml"):
 
     plt.figure(figsize=(10, 8))
     if isinstance(shap_values, list):
-        avg_shap = np.mean([np.abs(sv).mean(axis=0) for sv in shap_values], axis=0)
+        # Multi-class: one matrix per class -> (n_classes, n_samples, n_features)
+        stacked = np.stack([np.abs(sv) for sv in shap_values], axis=0)
+        avg_shap = stacked.mean(axis=(0, 1))
+    elif getattr(shap_values, "ndim", 0) == 3:
+        avg_shap = np.abs(shap_values).mean(axis=(0, 2))
     else:
         avg_shap = np.abs(shap_values).mean(axis=0)
+
+    avg_shap = np.asarray(avg_shap, dtype=float).ravel()
+    if len(avg_shap) != len(feature_cols) or not np.all(np.isfinite(avg_shap)):
+        from sklearn.inspection import permutation_importance
+
+        print("[WARN] SHAP values unstable; using permutation importance instead.")
+        y = df["Class"] if "Class" in df.columns else df[meta.get("target_column", "Class_Encoded")]
+        perm = permutation_importance(
+            model, X_sample, y.loc[X_sample.index], n_repeats=5, random_state=42, n_jobs=1
+        )
+        avg_shap = perm.importances_mean
 
     feat_importance = pd.Series(avg_shap, index=feature_cols).sort_values(ascending=True)
     feat_importance.plot(kind="barh", color="#2E86AB", edgecolor="black")
