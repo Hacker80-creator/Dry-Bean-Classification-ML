@@ -154,8 +154,16 @@ The visualization includes:
 - Comprehensive metrics table with best model highlighted
 
 ### Additional Visualizations
-- **Learning Curves**: Bias/variance analysis showing training vs validation accuracy across dataset sizes
-- **SHAP Importance**: Feature importance visualization showing which features drive predictions
+
+#### Learning Curves
+Bias/variance analysis showing training vs validation accuracy across dataset sizes:
+
+![Learning Curves](reports/learning_curves.png)
+
+#### SHAP Feature Importance
+Feature importance visualization showing which features drive predictions:
+
+![SHAP Importance](reports/shap_importance.png)
 
 ---
 
