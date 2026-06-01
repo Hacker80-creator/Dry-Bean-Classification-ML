@@ -12,20 +12,23 @@ This repository implements an end-to-end machine learning pipeline designed to c
 
 ---
 
-## Phase2 Benchmark Results
+## Benchmark Results
 
 The benchmark evaluated 6 different machine learning algorithms to identify the best performing model:
 
 | Model | CV Accuracy (Mean) | CV Accuracy (Std) | Holdout Accuracy | Macro F1 Score |
 |-------|-------------------|-------------------|------------------|----------------|
-| **SVM** | 92.75% | 1.26% | **94.20%** | 0.9498 |
-| Logistic Regression | 92.35% | 0.82% | 94.00% | 0.9475 |
-| KNN | 91.50% | 1.39% | 94.00% | 0.9471 |
-| Random Forest | 91.80% | 0.76% | 93.40% | 0.9404 |
-| Gaussian NB | 90.75% | 0.94% | 91.40% | 0.9192 |
-| Decision Tree | 89.80% | 1.62% | 91.00% | 0.9192 |
+| **SVM (tuned)** | 93.03% | - | **93.65%** | 0.9464 |
+| Logistic Regression (tuned) | 92.56% | - | 92.73% | 0.9379 |
+| Random Forest (tuned) | 92.22% | - | 93.21% | 0.9417 |
+| SVM | 92.78% | - | 93.35% | 0.9429 |
+| Logistic Regression | 92.46% | - | 92.88% | 0.9395 |
+| KNN | 92.15% | - | 92.25% | 0.9342 |
+| Random Forest | 92.22% | - | 93.21% | 0.9417 |
+| Gaussian NB | 90.05% | - | 91.08% | 0.9210 |
+| Decision Tree | 89.57% | - | 90.12% | 0.9138 |
 
-**Winner:** Support Vector Machine (SVM) with RBF kernel achieved the highest holdout accuracy of 94.2%, representing a 4.2% improvement over the baseline KNN model.
+**Winner:** Support Vector Machine (SVM) with RBF kernel achieved the highest holdout accuracy of 93.65% after hyperparameter tuning.
 
 ---
 
@@ -188,7 +191,7 @@ Feature importance visualization showing which features drive predictions:
 ## Project Structure
 
 ```
-Karunadu Project/
+Dry-Bean-Classification-ML/
 ├── config/
 │   └── benchmark_config.yaml      # Configuration file
 ├── Data_sets/
@@ -244,84 +247,11 @@ Phase3 adds production-grade CI/CD capabilities using Dockerized execution and J
 ### Final Jenkins pipeline stages
 1. **Checkout** - pull branch source.
 2. **Build Docker Image** - build `bean-classification:${BUILD_NUMBER}`.
-3. **Run Data Alignment** - generate `train_dataset.csv` and copy it into Jenkins workspace in the same container lifecycle.
+3. **Run Data Alignment** - generate `train_dataset.csv` and copy it into Jenkins workspace.
 4. **Run Model Benchmarking** - train/evaluate models and persist model/report outputs.
 5. **Generate Visualizations** - produce `performance_chart.png`.
 6. **Archive Artifacts to VM** - copy models/reports/chart/config to output directory and archive in Jenkins.
 7. **Cleanup** - remove build image.
-
-### Important implementation notes
-- Data alignment uses the container's built-in source dataset and copies generated `train_dataset.csv` to mounted workspace path.
-- `vars/docker.groovy` executes commands using `sh -c` inside container so compound commands run in-container.
-- Visualization font is set to a container-safe default (`DejaVu Sans`) to avoid font warnings in Linux/Jenkins containers.
-
-### Jenkins setup (current)
-1. Install required plugins:
-   - Docker Pipeline
-   - Credentials Binding (for SCM credentials or other Jenkins credentials you use)
-2. Create pipeline job:
-   - **Pipeline script from SCM**
-   - repository URL
-   - branch: `usr/Jagadev/Enhancement`
-   - script path: `Jenkinsfile`
-3. Ensure Jenkins agent can access Docker daemon.
-4. Run **Build Now** and monitor stages.
-
-### Jenkins run evidence (Build #54)
-
-Latest validated run completed with:
-- **Status**: `Finished: SUCCESS`
-- **Branch/Commit**: `usr/Jagadev/Enhancement` / `df48c52`
-- **Image tag**: `bean-classification:54`
-- **Jenkins UI**: Last Successful Build artifact panel confirms archived outputs.
-
-Stage completion observed in console output:
-- Checkout
-- Build Docker Image
-- Run Data Alignment
-- Run Model Benchmarking
-- Generate Visualizations
-- Archive Artifacts to VM
-- Cleanup
-
-Benchmark highlights from the same run:
-- **Best model**: `svm_tuned`
-- **Holdout Accuracy**: `0.9365` (93.65%)
-- **Macro F1 Score**: `0.9464`
-- **CV Accuracy**: `0.9303`
-- **Best params**: `{'model__C': 100, 'model__gamma': 'scale'}`
-
-Archived artifacts visible in Jenkins:
-- `benchmark_config.yaml`
-- `best_model.joblib`
-- `model_metadata.json`
-- `performance_chart.png`
-- `benchmark_results.csv`
-- `best_model_metrics.json`
-- `confusion_matrix.json`
-- `classification_report.json`
-- `learning_curves.png`
-
-### Phase3 project structure
-
-```
-Karunadu Project/
-├── Dockerfile
-├── docker-compose.yml
-├── Jenkinsfile
-├── .dockerignore
-├── pipeline-main.groovy
-├── vars/
-│   ├── docker.groovy
-│   └── pipeline.groovy
-├── config/
-│   └── benchmark_config.yaml
-├── Data_sets/
-├── models/
-├── reports/
-├── Scripts/
-└── requirements.txt
-```
 
 ### Benefits
 - **Reproducibility**: consistent runtime through Docker image build.
@@ -361,16 +291,6 @@ See `notebooks/EDA.ipynb` for exploratory data analysis including:
 - Correlation heatmap
 - Outlier detection
 - Feature-target relationships
-
-### Extended Pipeline (optional steps)
-
-```powershell
-python Scripts\data_alignment.py
-python Scripts\benchmark_models.py
-python Scripts\visualize_results.py
-python Scripts\explain_model.py
-python app.py
-```
 
 ---
 
