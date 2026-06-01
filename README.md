@@ -262,17 +262,17 @@ Phase3 adds production-grade CI/CD capabilities using Dockerized execution and J
 2. Create pipeline job:
    - **Pipeline script from SCM**
    - repository URL
-   - branch: `usr/Jagadev/Phase3`
+   - branch: `usr/Jagadev/Enhancement`
    - script path: `Jenkinsfile`
 3. Ensure Jenkins agent can access Docker daemon.
 4. Run **Build Now** and monitor stages.
 
-### Jenkins run evidence (Build #30)
+### Jenkins run evidence (Build #54)
 
 Latest validated run completed with:
 - **Status**: `Finished: SUCCESS`
-- **Branch/Commit**: `usr/Jagadev/Phase3` / `02fc202`
-- **Image tag**: `bean-classification:30`
+- **Branch/Commit**: `usr/Jagadev/Enhancement` / `df48c52`
+- **Image tag**: `bean-classification:54`
 - **Jenkins UI**: Last Successful Build artifact panel confirms archived outputs.
 
 Stage completion observed in console output:
@@ -285,10 +285,11 @@ Stage completion observed in console output:
 - Cleanup
 
 Benchmark highlights from the same run:
-- **Best model**: `random_forest`
-- **Holdout Accuracy**: `0.9324` (93.24%)
-- **Macro F1 Score**: `0.942767`
-- **CV Accuracy**: `0.9235 +/- 0.0037`
+- **Best model**: `svm_tuned`
+- **Holdout Accuracy**: `0.9365` (93.65%)
+- **Macro F1 Score**: `0.9464`
+- **CV Accuracy**: `0.9303`
+- **Best params**: `{'model__C': 100, 'model__gamma': 'scale'}`
 
 Archived artifacts visible in Jenkins:
 - `benchmark_config.yaml`
@@ -297,6 +298,9 @@ Archived artifacts visible in Jenkins:
 - `performance_chart.png`
 - `benchmark_results.csv`
 - `best_model_metrics.json`
+- `confusion_matrix.json`
+- `classification_report.json`
+- `learning_curves.png`
 
 ### Phase3 project structure
 
