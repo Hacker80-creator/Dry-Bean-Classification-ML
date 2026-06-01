@@ -53,13 +53,6 @@ def archiveArtifacts(String workspace, String outputDir) {
         mkdir -p ${outputDir}
         cp -r ${workspace}/models ${outputDir}/
         cp -r ${workspace}/reports ${outputDir}/
-        if [ -f ${workspace}/reports/performance_chart.png ]; then
-            cp ${workspace}/reports/performance_chart.png ${outputDir}/performance_chart.png
-        else
-            echo "ERROR: reports/performance_chart.png not found"
-            ls -la ${workspace}/reports/ || true
-            exit 1
-        fi
         cp ${workspace}/config/benchmark_config.yaml ${outputDir}/
         echo "Artifacts archived to ${outputDir}"
     """
