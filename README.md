@@ -143,7 +143,10 @@ To customize the benchmark:
 
 ## Performance Visualization
 
-The benchmark chart (`performance_chart.png`) is generated during pipeline execution and archived as a Jenkins artifact.
+### Main Performance Dashboard
+The benchmark chart (`performance_chart.png`) shows all key metrics in one comprehensive view:
+
+![Performance Chart](performance_chart.png)
 
 The visualization includes:
 - Holdout accuracy comparison across all models
