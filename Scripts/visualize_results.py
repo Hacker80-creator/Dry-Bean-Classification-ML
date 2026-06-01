@@ -203,13 +203,23 @@ def create_visualizations(config_path: str = "config/benchmark_config.yaml"):
 
 def plot_learning_curves(config_path: str = "config/benchmark_config.yaml"):
     config = load_config(config_path)
+    if not config["training"].get("enable_learning_curves", True):
+        print("[SKIP] Learning curves disabled in config.")
+        return None
+
     data_path = config["paths"]["data_path"]
     report_dir = config["paths"]["report_dir"]
+    model_path = config["paths"]["model_path"]
     random_state = int(config["training"]["random_state"])
     cv_splits = int(config["training"]["cv_splits"])
+    curve_points = int(config["training"].get("learning_curve_points", 5))
     n_jobs = int(config["training"].get("n_jobs", 1))
     if os.name == "nt":
         n_jobs = 1
+
+    if not os.path.exists(model_path):
+        print(f"[WARN] Model not found at {model_path}; skipping learning curves.")
+        return None
 
     df = pd.read_csv(data_path)
     target_col = "Class" if "Class" in df.columns else "Class_Encoded"
@@ -218,7 +228,7 @@ def plot_learning_curves(config_path: str = "config/benchmark_config.yaml"):
     X = df[feature_cols].values
     y = df[target_col].values
 
-    model = joblib.load(os.path.join(config["paths"]["model_dir"], "best_model.joblib"))
+    model = joblib.load(model_path)
     cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=random_state)
 
     train_sizes, train_scores, val_scores = learning_curve(
@@ -226,7 +236,7 @@ def plot_learning_curves(config_path: str = "config/benchmark_config.yaml"):
         X,
         y,
         cv=cv,
-        train_sizes=np.linspace(0.1, 1.0, 10),
+        train_sizes=np.linspace(0.2, 1.0, curve_points),
         scoring="accuracy",
         n_jobs=n_jobs,
     )
@@ -260,4 +270,7 @@ def plot_learning_curves(config_path: str = "config/benchmark_config.yaml"):
 
 if __name__ == "__main__":
     create_visualizations()
-    plot_learning_curves()
+    try:
+        plot_learning_curves()
+    except Exception as exc:
+        print(f"[WARN] Learning curves skipped: {exc}")

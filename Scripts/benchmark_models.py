@@ -31,13 +31,13 @@ from config_utils import DEFAULT_CONFIG_PATH, load_config
 
 PARAM_GRIDS = {
     "svm": {
-        "model__C": [0.1, 1, 10, 100],
-        "model__gamma": ["scale", "auto", 0.01, 0.001],
+        "model__C": [1, 10, 100],
+        "model__gamma": ["scale", 0.01],
     },
     "random_forest": {
-        "model__n_estimators": [100, 300, 500],
-        "model__max_depth": [None, 10, 20, 30],
-        "model__max_features": ["sqrt", "log2"],
+        "model__n_estimators": [100, 300],
+        "model__max_depth": [None, 20],
+        "model__max_features": ["sqrt"],
     },
     "knn": {
         "model__n_neighbors": [3, 5, 7, 9, 11],

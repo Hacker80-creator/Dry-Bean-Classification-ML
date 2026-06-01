@@ -13,6 +13,8 @@ training:
   n_jobs: -1
   enable_tuning: true
   tuning_top_n: 3
+  enable_learning_curves: true
+  learning_curve_points: 5
 
 models:
   enabled:

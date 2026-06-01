@@ -30,11 +30,12 @@ def generateVisualizations(String imageName, String workspace) {
     docker.runCommand(imageName, 'python Scripts/visualize_results.py', [
         "${workspace}": '/workspace',
         "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/models": '/app/models',
         "${workspace}/reports": '/app/reports'
     ], '/app')
-    // Copy performance_chart.png from container to workspace
+    // Copy chart outputs from container to workspace (same pattern as train_dataset.csv)
     sh """
-        docker run --rm -v ${workspace}:/workspace ${imageName} cp /app/performance_chart.png /workspace/
+        docker run --rm -v ${workspace}:/workspace ${imageName} sh -c "cp /app/performance_chart.png /workspace/ 2>/dev/null || true"
     """
     echo 'Visualizations generated'
 }
