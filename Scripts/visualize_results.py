@@ -11,10 +11,16 @@ from sklearn.model_selection import StratifiedKFold, learning_curve
 from config_utils import load_config
 
 
+def _resolve_paths(config: dict):
+    """Allow Jenkins to override output dirs via env (write to /workspace/reports)."""
+    report_dir = os.environ.get("REPORT_DIR", config["paths"]["report_dir"])
+    chart_output_path = os.environ.get("CHART_OUTPUT", config["paths"]["chart_output_path"])
+    return report_dir, chart_output_path
+
+
 def create_visualizations(config_path: str = "config/benchmark_config.yaml"):
     config = load_config(config_path)
-    report_dir = config["paths"]["report_dir"]
-    chart_output_path = config["paths"]["chart_output_path"]
+    report_dir, chart_output_path = _resolve_paths(config)
 
     result_path = os.path.join(report_dir, "benchmark_results.csv")
     confusion_path = os.path.join(report_dir, "confusion_matrix.json")
@@ -208,7 +214,7 @@ def plot_learning_curves(config_path: str = "config/benchmark_config.yaml"):
         return None
 
     data_path = config["paths"]["data_path"]
-    report_dir = config["paths"]["report_dir"]
+    report_dir, _ = _resolve_paths(config)
     model_path = config["paths"]["model_path"]
     random_state = int(config["training"]["random_state"])
     cv_splits = int(config["training"]["cv_splits"])

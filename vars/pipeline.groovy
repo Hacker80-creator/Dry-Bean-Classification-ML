@@ -19,32 +19,22 @@ def runDataAlignment(String imageName, String workspace) {
 def runModelBenchmarking(String imageName, String workspace) {
     echo 'Running model benchmarking...'
     def docker = load 'vars/docker.groovy'
-    docker.runCommand(
-        imageName,
-        '''python Scripts/benchmark_models.py && \
-mkdir -p /workspace/models /workspace/reports && \
-cp -r /app/models/. /workspace/models/ && \
-cp -r /app/reports/. /workspace/reports/''',
-        [
-            "${workspace}": '/workspace',
-            "${workspace}/Data_sets": '/app/Data_sets',
-            "${workspace}/models": '/app/models',
-            "${workspace}/reports": '/app/reports'
-        ],
-        '/app'
-    )
+    // Outputs go to mounted models/ and reports/ — do not cp to /workspace (same path in Jenkins DooD).
+    docker.runCommand(imageName, 'python Scripts/benchmark_models.py', [
+        "${workspace}/Data_sets": '/app/Data_sets',
+        "${workspace}/models": '/app/models',
+        "${workspace}/reports": '/app/reports'
+    ], '/app')
     echo 'Model benchmarking completed'
 }
 
 def generateVisualizations(String imageName, String workspace) {
     echo 'Generating performance visualizations...'
     def docker = load 'vars/docker.groovy'
-    // Export reports via /workspace mount (reliable with Jenkins-in-Docker).
+    // Write charts directly under /workspace/reports (Jenkins workspace bind mount).
     docker.runCommand(
         imageName,
-        '''python Scripts/visualize_results.py && \
-mkdir -p /workspace/reports && \
-cp -r /app/reports/. /workspace/reports/''',
+        'mkdir -p /workspace/reports && REPORT_DIR=/workspace/reports CHART_OUTPUT=/workspace/reports/performance_chart.png python Scripts/visualize_results.py',
         [
             "${workspace}": '/workspace',
             "${workspace}/Data_sets": '/app/Data_sets',
@@ -66,7 +56,7 @@ def archiveArtifacts(String workspace, String outputDir) {
         if [ -f ${workspace}/reports/performance_chart.png ]; then
             cp ${workspace}/reports/performance_chart.png ${outputDir}/performance_chart.png
         else
-            echo "WARNING: performance_chart.png missing under reports/"
+            echo "ERROR: reports/performance_chart.png not found"
             ls -la ${workspace}/reports/ || true
             exit 1
         fi
