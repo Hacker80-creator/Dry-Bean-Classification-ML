@@ -4,10 +4,11 @@
 This repository implements an end-to-end machine learning pipeline designed to classify seven distinct varieties of dry beans utilizing high-dimensional morphological and geometric data. The project features a comprehensive model benchmarking framework that evaluates multiple algorithms to identify the optimal classifier for automated agricultural sorting.
 
 ### Technical Performance
-* **Best Model Accuracy:** 94.2% (Support Vector Machine with RBF Kernel)
-* **Feature Space:** 21-Dimensional (Morphological & Geometric)
-* **Dataset Size:** 2,500 samples with 7 bean classes
+* **Best Model Accuracy:** 93.65% (Support Vector Machine with RBF Kernel, tuned)
+* **Feature Space:** 21-Dimensional (Morphological & Geometric + 5 Engineered Features)
+* **Dataset Size:** 13,611 samples with 7 bean classes
 * **Evaluation Method:** 5-fold Stratified Cross-Validation + Holdout Test Set
+* **Macro F1 Score:** 0.9464
 
 ---
 
@@ -35,11 +36,17 @@ The project utilizes a **modular, configuration-driven architecture** with stric
 * **`Scripts/data_alignment.py`**: Data preprocessing pipeline that ensures dataset consistency
 * **`Scripts/benchmark_models.py`**: Model benchmarking engine with cross-validation and automated evaluation
 * **`Scripts/visualize_results.py`**: Visualization module for generating performance charts
+* **`Scripts/explain_model.py`**: SHAP-based model explainability
 * **`Scripts/config_utils.py`**: Configuration loading utilities
+* **`app.py`**: Flask REST API for model inference
 * **`models/best_model.joblib`**: Serialized best-performing model (SVM)
 * **`models/model_metadata.json`**: Model metadata and feature information
 * **`reports/benchmark_results.csv`**: Complete benchmark results for all models
 * **`reports/best_model_metrics.json`**: Detailed metrics for the best model
+* **`reports/confusion_matrix.json`**: Confusion matrix for best model
+* **`reports/classification_report.json`**: Per-class precision/recall/F1 scores
+* **`reports/shap_importance.png`**: SHAP feature importance visualization
+* **`reports/learning_curves.png`**: Learning curves for bias/variance analysis
 
 ---
 
@@ -71,6 +78,12 @@ python Scripts\benchmark_models.py
 
 # Step 3: Generate visualizations
 python Scripts\visualize_results.py
+
+# Step 4: Model explainability (optional)
+python Scripts\explain_model.py
+
+# Step 5: Start Flask API (optional)
+python app.py
 ```
 
 ### 3. View Results
@@ -80,6 +93,18 @@ notepad reports\benchmark_results.csv
 
 # View best model details
 notepad reports\best_model_metrics.json
+
+# View confusion matrix
+notepad reports\confusion_matrix.json
+
+# View classification report
+notepad reports\classification_report.json
+
+# View SHAP importance visualization
+start reports\shap_importance.png
+
+# View learning curves
+start reports\learning_curves.png
 ```
 
 ---
@@ -124,7 +149,13 @@ The visualization includes:
 - Holdout accuracy comparison across all models
 - Cross-validation vs holdout accuracy scatter plot
 - Macro F1 score comparison
+- Confusion matrix heatmap (best model)
+- Per-class accuracy bar chart
 - Comprehensive metrics table with best model highlighted
+
+### Additional Visualizations
+- **Learning Curves**: Bias/variance analysis showing training vs validation accuracy across dataset sizes
+- **SHAP Importance**: Feature importance visualization showing which features drive predictions
 
 ---
 
@@ -132,13 +163,14 @@ The visualization includes:
 
 | Metric | Value |
 | :--- | :--- |
-| **Best Model** | **SVM (RBF Kernel)** |
-| **Best Holdout Accuracy** | **94.20%** |
-| **Best Macro F1 Score** | **0.9498** |
-| **Dataset Size** | 2,500 samples |
-| **Feature Count** | 21 morphological features |
+| **Best Model** | **SVM (RBF Kernel, tuned)** |
+| **Best Holdout Accuracy** | **93.65%** |
+| **Best Macro F1 Score** | **0.9464** |
+| **Dataset Size** | 13,611 samples |
+| **Feature Count** | 21 morphological features + 5 engineered features |
 | **Number of Classes** | 7 bean varieties |
 | **Cross-Validation** | 5-fold Stratified |
+| **Hyperparameter Tuning** | GridSearchCV on top 3 models |
 
 ---
 
@@ -156,12 +188,20 @@ Karunadu Project/
 │   └── model_metadata.json         # Model metadata
 ├── reports/
 │   ├── benchmark_results.csv      # All model results
-│   └── best_model_metrics.json    # Best model details
+│   ├── best_model_metrics.json    # Best model details
+│   ├── confusion_matrix.json      # Confusion matrix
+│   ├── classification_report.json # Per-class metrics
+│   ├── shap_importance.png       # SHAP visualization
+│   └── learning_curves.png        # Learning curves
 ├── Scripts/
 │   ├── benchmark_models.py         # Benchmarking engine
 │   ├── data_alignment.py          # Data preprocessing
 │   ├── visualize_results.py       # Visualization generator
+│   ├── explain_model.py           # SHAP explainability
 │   └── config_utils.py            # Config utilities
+├── notebooks/
+│   └── EDA.ipynb                  # Exploratory data analysis
+├── app.py                          # Flask REST API
 ├── requirements.txt                # Python dependencies
 └── performance_chart.png          # Results visualization
 ```
